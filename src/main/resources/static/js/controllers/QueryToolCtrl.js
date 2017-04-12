@@ -4,8 +4,7 @@ airportsApp.controller("QueryToolCtrl", ["$scope", "AirportsService", "Countries
         $scope.query = {type: "countryName", inProgress: false};
         $scope.reload = {inProgress: false};
         $scope.report = {inProgress: false};
-        $scope.currentPage;
-        $scope.numPerPage = 20;
+        $scope.paging = {currentPage: 0, numPerPage: 20};
 
         var that = this;
 
@@ -23,8 +22,8 @@ airportsApp.controller("QueryToolCtrl", ["$scope", "AirportsService", "Countries
             }
 
             promise.then(function (result) {
-                $scope.currentPage = 1;
-                that.queryResult = result.data;
+                $scope.paging.currentPage = 1;
+                $scope.queryResult = result.data;
             }, function (error) {
                 console.log("Query error!", error);
             }).finally(function () {
@@ -34,15 +33,18 @@ airportsApp.controller("QueryToolCtrl", ["$scope", "AirportsService", "Countries
 
         that.executeQuery = function (method) {
             $scope.query.inProgress = true;
-            that.queryResult = null;
+            $scope.queryResult = null;
+            $scope.paging.currentPage = 0;
             return method($scope.query.value);
         };
 
-        $scope.$watch("currentPage", function() {
-            var begin = (($scope.currentPage - 1) * $scope.numPerPage)
-                , end = begin + $scope.numPerPage;
+        $scope.$watch("paging.currentPage", function() {
+            if ($scope.queryResult) {
+                var begin = (($scope.paging.currentPage - 1) * $scope.paging.numPerPage)
+                    , end = begin + $scope.paging.numPerPage;
 
-            $scope.filteredQueryResult = that.queryResult.slice(begin, end);
+                $scope.filteredQueryResult = $scope.queryResult.slice(begin, end);
+            }
         });
 
         that.executeReport = function (method, resultProcessor) {

@@ -57,7 +57,7 @@
                                 <span ng-if="!queryResult.length">No results found!</span>
                                 <table class="table table-bordered table-hover">
                                     <tbody>
-                                    <tr ng-repeat="record in queryResult track by $index">
+                                    <tr ng-repeat="record in filteredQueryResult track by $index">
                                         <td>
                                             {{record}}
                                         </td>
@@ -65,8 +65,8 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <ul uib-pagination total-items="queryResult.length" ng-model="currentPage" max-size="5"
-                                class="pagination-sm" boundary-link-numbers="true"></ul>
+                            <ul ng-if="queryResult.length > paging.numPerPage" uib-pagination total-items="queryResult.length" ng-model="paging.currentPage" max-size="4"
+                                class="pagination-sm" boundary-link-numbers="true" items-per-page="paging.numPerPage"></ul>
                         </div>
                     </div>
                 </uib-tab>
