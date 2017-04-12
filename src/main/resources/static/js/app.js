@@ -1,0 +1,1 @@
+var airportsApp = angular.module("airportsApp", ['ui.bootstrap']);

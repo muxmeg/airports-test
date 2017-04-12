@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="webjars/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="webjars/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="webjars/jquery/2.2.4/jquery.min.js"></script>
+    <script src="webjars/angularjs/1.6.2/angular.js"></script>
+    <script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="webjars/angular-ui-bootstrap/2.2.0/ui-bootstrap-tpls.min.js"></script>
+
+    <script src="js/app.js"></script>
+    <script src="js/services/AirportsService.js"></script>
+    <script src="js/services/CountriesService.js"></script>
+    <script src="js/services/RunwaysService.js"></script>
+    <script src="js/services/DataService.js"></script>
+    <script src="js/services/ReportsService.js"></script>
+    <script src="js/controllers/QueryToolCtrl.js"></script>
+
+    <title>Airports query tool</title>
+</head>
+<body>
+<div ng-app="airportsApp" ng-controller="QueryToolCtrl" class="container-fluid">
+    <div class="row">
+        <div class="col-sm-offset-3 col-sm-6">
+            <uib-tabset active="active">
+                <uib-tab index="0" heading="Query" disabled="reload.inProgress">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" ng-model="query.type" value="countryName">
+                                        By country name
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" ng-model="query.type" value="countryCode">
+                                        By country code
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="form-group" style="margin-top: 15px">
+                                    <input ng-model="query.value" class="form-control"/>
+                                </div>
+                                <button class="btn btn-primary" ng-click="submitQuery()" ng-disabled="query.inProgress">
+                                    Submit
+                                </button>
+                                <i class="fa fa-spinner fa-spin" style="font-size:24px" ng-show="query.inProgress"></i>
+                            </div>
+                        </div>
+                        <div class="row" ng-if="queryResult">
+                            <h2>Results:</h2>
+                            <div style="max-height: 500px; overflow: auto">
+                                <span ng-if="!queryResult.length">No results found!</span>
+                                <table class="table table-bordered table-hover">
+                                    <tbody>
+                                    <tr ng-repeat="record in queryResult track by $index">
+                                        <td>
+                                            {{record}}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <ul uib-pagination total-items="queryResult.length" ng-model="currentPage" max-size="5"
+                                class="pagination-sm" boundary-link-numbers="true"></ul>
+                        </div>
+                    </div>
+                </uib-tab>
+                <uib-tab index="1" heading="Reports" disabled="reload.inProgress">
+                    <div class="container-fluid">
+                        <div class="row" style="margin-top: 15px">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <button class="btn btn-info" ng-disabled="report.inProgress"
+                                            ng-click="findCountriesByAirportsCount()">Get
+                                    </button>
+                                    <span>Countries with most/least airports</span>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-info" ng-disabled="report.inProgress"
+                                            ng-click="findRunwaysPerCountry()">Get
+                                    </button>
+                                    <span>Type of runways per country</span>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-info" ng-disabled="report.inProgress"
+                                            ng-click="findCommonRunwayIdents()">Get
+                                    </button>
+                                    <span>Top 10 most common runway identifications</span>
+                                </div>
+                                <i class="fa fa-spinner fa-spin pull-right" style="font-size:24px"
+                                   ng-show="report.inProgress">
+                                </i>
+                            </div>
+                        </div>
+                        <div class="row" ng-if="reportResult">
+                            <h2>Results:</h2>
+                            <div style="max-height: 600px; overflow: auto">
+                                <table class="table table-bordered table-hover">
+                                    <tbody>
+                                    <tr ng-repeat="record in reportResult track by $index">
+                                        <td>
+                                            {{record}}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </uib-tab>
+                <uib-tab index="2" heading="Data Process">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <button class="btn btn-danger" ng-disabled="reload.inProgress"
+                                            ng-click="reloadAll()">
+                                        Reload All
+                                    </button>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-danger" ng-disabled="reload.inProgress"
+                                            ng-click="reloadAirports()">
+                                        Reload Airports & Runways
+                                    </button>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-danger" ng-disabled="reload.inProgress"
+                                            ng-click="reloadRunways()">
+                                        Reload Runways
+                                    </button>
+                                </div>
+                                <i class="fa fa-spinner fa-spin pull-right" style="font-size:24px"
+                                   ng-show="reload.inProgress">
+                                </i>
+                            </div>
+                        </div>
+                    </div>
+                </uib-tab>
+            </uib-tabset>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
